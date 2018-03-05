@@ -8,6 +8,7 @@ using namespace g3rb3n;
 Thing thing;
 
 bool motion = false;
+bool lastState = false;
 
 void setup()
 {
@@ -25,10 +26,10 @@ void setup()
 
   thing.begin();
 
-  thing.addSensor(thing.clientId() + "/pir/motion", 1000, [](Value& value){
-    value = motion;
-    Serial.println(motion);
-  });
+  //thing.addSensor(thing.clientId() + "/pir/motion", 1000, [](Value& value){
+  //  value = motion;
+  //  Serial.println(motion);
+  //});
 
 }
 
@@ -41,5 +42,12 @@ void loop()
 void handle()
 {
   motion = digitalRead(PIR_PIN);
+  if (motion != lastState)
+  {
+    Value value = motion;
+    thing.publish(thing.clientId() + "/pir/motion", value);
+    Serial.println(motion);
+    lastState = motion;
+  }
   digitalWrite(BUILTIN_LED, !motion);
 }
