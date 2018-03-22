@@ -1,9 +1,8 @@
 #include <Thing.h>
-#include <BlinkPattern.h>
 
 #define PIR_PIN D3
 
-using namespace g3rb3n;
+using namespace ootb;
 
 Thing thing;
 
@@ -12,42 +11,36 @@ bool lastState = false;
 
 void setup()
 {
-  Serial.begin(230400);
-  Serial.println();
+    Serial.begin(230400);
+    Serial.println();
 
-  Serial.println("ClientID:" + thing.clientId());
+    Serial.println("ClientID:" + thing.clientId());
 
-  pinMode(BUILTIN_LED, OUTPUT);
-  pinMode(PIR_PIN, INPUT);
+    pinMode(BUILTIN_LED, OUTPUT);
+    pinMode(PIR_PIN, INPUT);
 
-  thing.onStateChange([](const String& msg){
-    Serial.println(msg);
-  });
+    thing.onStateChange([](const String& msg){
+        Serial.println(msg);
+    });
 
-  thing.begin();
-
-  //thing.addSensor(thing.clientId() + "/pir/motion", 1000, [](Value& value){
-  //  value = motion;
-  //  Serial.println(motion);
-  //});
-
+    thing.begin();
 }
 
 void loop()
 {
-  handle();
-  thing.handle();
+    handle();
+    thing.handle();
 }
 
 void handle()
 {
-  motion = digitalRead(PIR_PIN);
-  if (motion != lastState)
-  {
-    Value value = motion;
-    thing.publish(thing.clientId() + "/pir/motion", value);
-    Serial.println(motion);
-    lastState = motion;
-  }
-  digitalWrite(BUILTIN_LED, !motion);
+    motion = digitalRead(PIR_PIN);
+    digitalWrite(BUILTIN_LED, !motion);
+    if (motion != lastState)
+    {
+        Value value = motion;
+        thing.publish("pir/motion/" + thing.clientId(), value);
+        Serial.println(motion);
+        lastState = motion;
+    }
 }
