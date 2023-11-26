@@ -9,14 +9,14 @@ Thing thing;
 bool motion = false;
 bool lastState = false;
 
+String topic = "things/" + thing.clientId() + "/pir/motion";
+
 void setup()
 {
     Serial.begin(230400);
     Serial.println();
-
     Serial.println("ClientID:" + thing.clientId());
 
-    pinMode(BUILTIN_LED, OUTPUT);
     pinMode(PIR_PIN, INPUT);
 
     thing.onStateChange([](const String& msg){
@@ -39,7 +39,7 @@ void handle()
     if (motion != lastState)
     {
         Value value = motion;
-        thing.publish("pir/motion/" + thing.clientId(), value);
+        thing.publish(topic, value);
         Serial.println(motion);
         lastState = motion;
     }
